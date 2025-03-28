@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>신분증 생년월일 인식</title>
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .camera-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 10px;
+      }
+      video,
+      #capturedImage {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+      .guide-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 60px;
+        border: 2px solid red;
+        box-sizing: border-box;
+        pointer-events: none;
+        border-radius: 5px;
+      }
+      .guide-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 8px;
+        border-radius: 5px;
+        width: 80%;
+        text-align: center;
+        font-size: 14px;
+      }
+      .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+      }
+      button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #f44336;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #e53935;
+      }
+      #brightnessButton {
+        background-color: #555;
+      }
+      #retakeButton,
+      #nextCaptureButton,
+      #completeButton {
+        display: none;
+      }
+      #loading {
+        margin: 20px 0;
+        font-weight: bold;
+        display: none;
+      }
+      #result {
+        margin-top: 20px;
+        text-align: left;
+      }
+      .result-container {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        background-color: #f9f9f9;
+      }
+      .result-container p {
+        margin: 8px 0;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .result-container strong {
+        color: #0066cc;
+      }
+      .error-message {
+        color: #d9534f;
+        font-weight: bold;
+        padding: 10px;
+        background-color: #f2dede;
+        border-radius: 4px;
+      }
+      .tips {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        text-align: left;
+      }
+      .tips h3 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>신분증 생년월일 인식</h1>
+
+    <div class="camera-container">
+      <video id="video" autoplay playsinline></video>
+      <img id="capturedImage" style="display: none" />
+      <canvas id="canvas" style="display: none"></canvas>
+      <div class="guide-box"></div>
+      <div class="guide-text">생년월일을 이 영역에 맞춰주세요</div>
+    </div>
+
+    <div class="btn-container">
+      <button id="captureButton">촬영</button>
+      <button id="retakeButton" style="display: none">다시 촬영</button>
+      <button id="nextCaptureButton" style="display: none">다음 촬영</button>
+      <button id="completeButton" style="display: none">완료</button>
+      <button id="brightnessButton">화면 어둡게</button>
+    </div>
+
+    <div id="loading">이미지 처리 중... 잠시만 기다려주세요.</div>
+
+    <div id="result">
+      <h2>인식 결과</h2>
+    </div>
+
+    <div class="tips">
+      <h3>인식이 잘 안될 경우 팁:</h3>
+      <ul>
+        <li>직접적인 광원을 피해주세요.</li>
+        <li>"화면 어둡게" 버튼을 눌러 화면을 어둡게 만들어보세요.</li>
+        <li>신분증을 약간 기울여 반사를 줄여보세요.</li>
+        <li>어두운 배경 위에 신분증을 올려놓고 촬영해보세요.</li>
+      </ul>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
