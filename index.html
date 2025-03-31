@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>신분증 생년월일 인식</title>
+    <title>하이오더 본인인증 서비스</title>
     <style>
       body {
         font-family: "Noto Sans KR", sans-serif;
@@ -11,6 +11,9 @@
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
       .camera-container {
         position: relative;
@@ -19,12 +22,15 @@
         margin: 0 auto;
         overflow: hidden;
         border-radius: 10px;
+        aspect-ratio: 4/3;
+        background-color: #000;
       }
       video,
       #capturedImage {
         width: 100%;
+        height: 100%;
+        object-fit: cover;
         border-radius: 10px;
-        margin-bottom: 10px;
       }
       .guide-box {
         position: absolute;
@@ -56,6 +62,7 @@
         justify-content: center;
         gap: 10px;
         margin: 15px 0;
+        flex-wrap: wrap;
       }
       button {
         padding: 10px 15px;
@@ -66,6 +73,7 @@
         font-weight: bold;
         cursor: pointer;
         font-size: 16px;
+        min-width: 120px;
       }
       button:hover {
         background-color: #e53935;
@@ -86,12 +94,14 @@
       #result {
         margin-top: 20px;
         text-align: left;
+        width: 100%;
       }
       .result-container {
         border: 1px solid #ddd;
         border-radius: 5px;
         padding: 15px;
         background-color: #f9f9f9;
+        margin-bottom: 20px;
       }
       .result-container p {
         margin: 8px 0;
@@ -118,10 +128,20 @@
       .tips h3 {
         margin-top: 0;
       }
+      @media (max-width: 600px) {
+        .camera-container {
+          aspect-ratio: 16/9;
+          max-height: 60vh;
+        }
+        button {
+          padding: 12px 20px;
+          font-size: 18px;
+        }
+      }
     </style>
   </head>
   <body>
-    <h1>신분증 생년월일 인식</h1>
+    <h1>하이오더 본인인증 서비스</h1>
 
     <div class="camera-container">
       <video id="video" autoplay playsinline></video>

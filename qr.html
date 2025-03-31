@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>하이오더 본인인증 서비스</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f5f5f5;
+      }
+      .container {
+        text-align: center;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 1.5rem;
+      }
+      #qrcode {
+        margin: 2rem auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .instructions {
+        color: #666;
+        margin: 1.5rem 0;
+        line-height: 1.5;
+      }
+      #error-message {
+        color: red;
+        margin-top: 1rem;
+        display: none;
+      }
+      #ip-address {
+        margin-top: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+      }
+      .manual-link {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        color: #666;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>하이오더 본인인증 서비스</h1>
+      <div id="qrcode"></div>
+      <p class="instructions">
+        휴대폰으로 QR 코드를 스캔하여<br />
+        신분증 인증을 진행해주세요
+      </p>
+      <p id="ip-address"></p>
+      <p id="error-message">
+        QR 코드 생성에 실패했습니다. 페이지를 새로고침해주세요.
+      </p>
+      <a href="#" id="manual-link" class="manual-link" style="display: none">
+        QR 코드가 작동하지 않을 경우 여기를 클릭하세요
+      </a>
+    </div>
+
+    <script>
+      function generateQR() {
+        try {
+          if (typeof QRCode === "undefined") {
+            console.error("QRCode 라이브러리가 로드되지 않았습니다.");
+            document.getElementById("error-message").style.display = "block";
+            return;
+          }
+
+          const ipAddress = "172.30.1.93"; // 여기에 PC의 IP 주소를 직접 입력
+          const authPageUrl = `https://${ipAddress}:8000`;
+
+          new QRCode(document.getElementById("qrcode"), {
+            text: authPageUrl,
+            width: 256,
+            height: 256,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H,
+          });
+
+          // IP 주소 표시
+          document.getElementById(
+            "ip-address"
+          ).textContent = `서버 주소: ${authPageUrl}`;
+
+          // 수동 링크 설정
+          const manualLink = document.getElementById("manual-link");
+          manualLink.href = authPageUrl;
+          manualLink.style.display = "block";
+
+          console.log("생성된 인증 페이지 URL:", authPageUrl);
+        } catch (error) {
+          console.error("QR 코드 생성 중 오류:", error);
+          document.getElementById("error-message").style.display = "block";
+        }
+      }
+
+      // 페이지 로드 완료 후 QR 코드 생성
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", generateQR);
+      } else {
+        generateQR();
+      }
+    </script>
+  </body>
+</html>
