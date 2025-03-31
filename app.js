@@ -11,7 +11,7 @@ const capturedImage = document.getElementById("capturedImage");
 const ctx = canvas.getContext("2d");
 
 // 프록시 서버 URL 설정
-const PROXY_URL = `https://172.30.1.93:3000/proxy/ocr`;
+const PROXY_URL = `https://172.30.1.10:3000/proxy/ocr`;
 
 // 캡처된 이미지와 정보 저장
 let capturedImages = [];
@@ -394,7 +394,7 @@ function complete() {
   console.log("모든 캡처된 신분증 정보:", capturedImages);
 
   // WebSocket 서버에 인증 완료 메시지 전송
-  const socket = io("https://172.30.1.93:3001");
+  const socket = io("https://172.30.1.10:3001");
   socket.on("connect", () => {
     socket.emit("authSuccess");
     socket.disconnect();
