@@ -11,11 +11,20 @@ const capturedImage = document.getElementById("capturedImage");
 const ctx = canvas.getContext("2d");
 
 // 프록시 서버 URL 설정
-const PROXY_URL = "http://localhost:3000/proxy/ocr";
+const PROXY_URL = `https://172.30.1.93:3000/proxy/ocr`;
 
 // 캡처된 이미지와 정보 저장
 let capturedImages = [];
 let isScreenDark = false;
+
+// 페이지 로드 시 카메라 초기화
+document.addEventListener("DOMContentLoaded", () => {
+  if (location.protocol !== "https:" && location.hostname !== "localhost") {
+    alert("카메라 접근을 위해서는 HTTPS가 필요합니다.");
+    return;
+  }
+  initCamera();
+});
 
 // 카메라 초기화
 async function initCamera() {
@@ -31,6 +40,7 @@ async function initCamera() {
         width: { ideal: 1280 },
         height: { ideal: 720 },
         facingMode: "environment",
+        aspectRatio: { ideal: 4 / 3 },
       },
       audio: false,
     };
@@ -121,8 +131,10 @@ function maskRRN(rrn) {
 // Base64 이미지를 프록시 서버를 통해 CLOVA OCR API로 전송
 async function sendToClova(imageBase64) {
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+  console.log("OCR API 요청 시작");
 
   try {
+    console.log("프록시 서버로 요청 전송:", PROXY_URL);
     const response = await fetch(PROXY_URL, {
       method: "POST",
       headers: {
@@ -143,11 +155,13 @@ async function sendToClova(imageBase64) {
     });
 
     if (!response.ok) {
+      console.error("API 응답 오류:", response.status, response.statusText);
       throw new Error(
         `API 요청 실패: ${response.status} ${response.statusText}`
       );
     }
 
+    console.log("OCR API 응답 성공");
     return await response.json();
   } catch (error) {
     console.error("CLOVA OCR API 호출 오류:", error);
@@ -376,12 +390,15 @@ async function retake() {
 
 // 완료
 function complete() {
-  alert(
-    `총 ${capturedImages.length}명의 신분증 정보가 성공적으로 처리되었습니다.`
-  );
+  alert(`신분증 정보가 성공적으로 처리되었습니다.`);
   console.log("모든 캡처된 신분증 정보:", capturedImages);
 
-  // 여기에 완료 후 처리 로직 추가 (예: 서버 전송, 다른 페이지로 이동 등)
+  // WebSocket 서버에 인증 완료 메시지 전송
+  const socket = io("https://172.30.1.93:3001");
+  socket.on("connect", () => {
+    socket.emit("authSuccess");
+    socket.disconnect();
+  });
 }
 
 // 화면 밝기 조절
@@ -403,12 +420,3 @@ retakeButton.addEventListener("click", retake);
 nextCaptureButton.addEventListener("click", nextCapture);
 completeButton.addEventListener("click", complete);
 brightnessButton.addEventListener("click", toggleBrightness);
-
-// 페이지 로드 시 카메라 초기화
-document.addEventListener("DOMContentLoaded", () => {
-  if (location.protocol !== "https:" && location.hostname !== "localhost") {
-    alert("카메라 접근을 위해서는 HTTPS가 필요합니다.");
-    return;
-  }
-  initCamera();
-});
