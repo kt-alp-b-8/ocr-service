@@ -389,16 +389,22 @@ async function retake() {
 }
 
 // 완료
-function complete() {
-  alert(`신분증 정보가 성공적으로 처리되었습니다.`);
-  console.log("모든 캡처된 신분증 정보:", capturedImages);
+async function complete() {
+  try {
+    // 인증 상태 서버에 카운트 증가 요청
+    await fetch("https://172.30.1.10:3002/increment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  // WebSocket 서버에 인증 완료 메시지 전송
-  const socket = io("https://172.30.1.10:3001");
-  socket.on("connect", () => {
-    socket.emit("authSuccess");
-    socket.disconnect();
-  });
+    alert(`신분증 정보가 성공적으로 처리되었습니다.`);
+    console.log("모든 캡처된 신분증 정보:", capturedImages);
+  } catch (error) {
+    console.error("인증 완료 처리 중 오류:", error);
+    alert("인증 완료 처리 중 오류가 발생했습니다.");
+  }
 }
 
 // 화면 밝기 조절
